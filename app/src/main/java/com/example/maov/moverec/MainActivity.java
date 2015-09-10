@@ -31,7 +31,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private long time               = -1;
     private float lastX, lastY, lastZ;
 
-    public static int MAXCAPTURE    = 5;
+    public static int MAXCAPTURE    = 30;
     public static int INACTIVE      = -1;
     public static int CAPTURING     = 0;
     public static int SAVING        = 1;
