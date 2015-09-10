@@ -15,9 +15,8 @@
         android:text="150"
         android:textSize="20dp"
         android:layout_alignParentTop="true"
-        android:layout_alignEnd="@+id/txtConst5"
         android:textAlignment="textStart"
-        android:layout_alignStart="@+id/txtConst4" />
+        android:layout_alignStart="@+id/accY" />
 
     <Button
         android:layout_width="wrap_content"
@@ -28,18 +27,17 @@
         android:textSize="35dp"
         android:nestedScrollingEnabled="false"
         android:onClick="onClick()"
-        android:layout_marginBottom="86dp"
-        android:layout_above="@+id/txtConst3"
+        android:height="100dp"
+        android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/txtConst5"
-        android:height="100dp" />
+        android:layout_alignEnd="@+id/gyrZ" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Cur X"
-        android:id="@+id/curX"
+        android:text="AX"
+        android:id="@+id/accX"
         android:textIsSelectable="false"
         android:textSize="30dp"
         android:layout_alignParentBottom="true"
@@ -49,23 +47,57 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Cur Y"
-        android:id="@+id/curY"
+        android:text="AY"
+        android:id="@+id/accY"
         android:textIsSelectable="false"
         android:textSize="30dp"
-        android:layout_alignTop="@+id/curX"
+        android:layout_alignTop="@+id/accX"
         android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Cur Z"
-        android:id="@+id/curZ"
-        android:layout_alignTop="@+id/curY"
+        android:text="AZ"
+        android:id="@+id/accZ"
+        android:layout_alignTop="@+id/accY"
         android:layout_alignParentEnd="true"
         android:textIsSelectable="false"
         android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="GX"
+        android:id="@+id/gyrX"
+        android:textIsSelectable="false"
+        android:textSize="30dp"
+        android:layout_marginBottom="60dp"
+        android:layout_above="@+id/accX"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="GY"
+        android:id="@+id/gyrY"
+        android:textIsSelectable="false"
+        android:textSize="30dp"
+        android:layout_alignBottom="@+id/gyrX"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="GZ"
+        android:id="@+id/gyrZ"
+        android:textIsSelectable="false"
+        android:textSize="30dp"
+        android:layout_alignBottom="@+id/gyrY"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -104,32 +136,5 @@
         android:layout_marginTop="35dp"
         android:textStyle="bold"
         android:layout_toStartOf="@+id/txtCount" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Current X"
-        android:id="@+id/txtConst3"
-        android:layout_above="@+id/curX"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Current Y"
-        android:id="@+id/txtConst4"
-        android:layout_above="@+id/curY"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Current Z"
-        android:id="@+id/txtConst5"
-        android:layout_above="@+id/curZ"
-        android:layout_alignEnd="@+id/curZ" />
 
 </RelativeLayout>
