@@ -85,8 +85,8 @@
         android:id="@+id/gyrY"
         android:textIsSelectable="false"
         android:textSize="30dp"
-        android:layout_alignBottom="@+id/gyrX"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignTop="@+id/gyrX"
+        android:layout_alignEnd="@+id/accY" />
 
     <TextView
         android:layout_width="wrap_content"

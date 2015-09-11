@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 public class MainActivity extends Activity implements SensorEventListener {
     private int ID                  = -1;
@@ -33,6 +34,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private Sensor gyroscope;
+    private int sensorSpeed         = SensorManager.SENSOR_DELAY_GAME;
 
     private Button btnCap;
     private TextView txtCount, accX, accY, accZ;
@@ -50,18 +52,23 @@ public class MainActivity extends Activity implements SensorEventListener {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if( sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null){
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+            sensorManager.registerListener(this, accelerometer, sensorSpeed);
+            notify("Accelerometer found", Toast.LENGTH_SHORT);
         }
         else{
-            return;
+            notify("No acc detected", Toast.LENGTH_SHORT);
+            accelerometer = null;
         }
 
         if( sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null){
             gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-            sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_FASTEST);
+            sensorManager.registerListener(this, gyroscope, sensorSpeed);
+            notify("Gyroscope found", Toast.LENGTH_SHORT);
+
         }
         else{
-            return;
+            notify("No gyro detected", Toast.LENGTH_SHORT);
+            gyroscope = null;
         }
 
         //List
@@ -71,53 +78,51 @@ public class MainActivity extends Activity implements SensorEventListener {
             @Override
             public void onClick(View v) {
 
-                if( STATUS == INACTIVE ){                           //Pre-capture mode
-                    txtID.setEnabled( false );                      //Disable the input field
-                    ID      = Integer.parseInt(txtID.getText().toString());   //Grab ID from field
-                    time    =  System.currentTimeMillis();          //Grab start time
+                if (STATUS == INACTIVE) {                           //Pre-capture mode
+                    txtID.setEnabled(false);                      //Disable the input field
+                    ID = Integer.parseInt(txtID.getText().toString());   //Grab ID from field
+                    time = System.currentTimeMillis();          //Grab start time
                     CAPTURE = 1;                                    //Set counter to 1 (first capture)
-                    txtCount.setText( Integer.toString(CAPTURE) +   //Set text of counter field
-                            "/" + Integer.toString(MAXCAPTURE) );
+                    txtCount.setText(Integer.toString(CAPTURE) +   //Set text of counter field
+                            "/" + Integer.toString(MAXCAPTURE));
                     btnCap.setText("Capturing!");                 //Set text of button
                     DataCenter.add(new Data(ID, CAPTURE, System.currentTimeMillis()));
-                    STATUS  = CAPTURING;                            //Update capture mode;
-                }
-                else if( STATUS == CAPTURING ){
-                    CAPTURE     = CAPTURE + 1;                      //Increment capture counter
-                    if(CAPTURE <= MAXCAPTURE){                      //While capturing Data
-                        if( CAPTURE == MAXCAPTURE ){                //Update button text on last capture
-                            btnCap.setText( "STOP CAPTURING!" );    //Update button
+                    STATUS = CAPTURING;                            //Update capture mode;
+                    notify("Capture started", Toast.LENGTH_SHORT);
+                } else if (STATUS == CAPTURING) {
+                    CAPTURE = CAPTURE + 1;                      //Increment capture counter
+                    if (CAPTURE <= MAXCAPTURE) {                      //While capturing Data
+                        if (CAPTURE == MAXCAPTURE) {                //Update button text on last capture
+                            btnCap.setText("STOP CAPTURING!");    //Update button
                         }
-                    }
-                    else{ //SAVE ETC
+                    } else { //SAVE ETC
+                        notify("Capture stopped", Toast.LENGTH_SHORT);
                         btnCap.setText("Saving...");                //Set text of button
                         btnCap.setEnabled(false);
                         STATUS = SAVING;                            //Start Saving data
                         saveData();
 
-                        STATUS  = INACTIVE;                         //Deactivate capture
-                        ID      = ID + 1;                           //Increment ID
+                        STATUS = INACTIVE;                         //Deactivate capture
+                        ID = ID + 1;                           //Increment ID
                         CAPTURE = 0;                                //Reset Capture counter
-                        txtID.setText( Integer.toString(ID) );      //Set new ID
+                        txtID.setText(Integer.toString(ID));      //Set new ID
 
-                        txtID.setEnabled( true );                   //Enable the input field
+                        txtID.setEnabled(true);                   //Enable the input field
                         btnCap.setEnabled(true);                    //Enable the button
                         btnCap.setText("Start Capture");            //Set text of button
                     }
 
-                    txtCount.setText( Integer.toString(CAPTURE) +   //Update textfield for counter
-                            "/" + Integer.toString(MAXCAPTURE) );
+                    txtCount.setText(Integer.toString(CAPTURE) +   //Update textfield for counter
+                            "/" + Integer.toString(MAXCAPTURE));
                 }
             }
-            public void notify( String str, int dur ){
+
+            public void notify(String str, int dur) {
                 Context context = getApplicationContext();
-                Toast toast = Toast.makeText( context, str, dur );
+                Toast toast = Toast.makeText(context, str, dur);
                 toast.show();
             }
         });
-
-
-        notify("Application was created", Toast.LENGTH_SHORT);
     }
 
     public void initializeViews(){
@@ -153,26 +158,19 @@ public class MainActivity extends Activity implements SensorEventListener {
             txtID.setEnabled( false );
             txtCount.setText( "Save folder wasn't created, I've disabled the application." );
         }
-
-        notify( "Application was initialized", Toast.LENGTH_SHORT);
     }
 
     public void onAccuracyChanged( Sensor s, int i ){
-        notify("Accuracy changed", Toast.LENGTH_SHORT);
         return;
     }
 
-    //Resume
     protected void onResume(){
         super.onResume();
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_FASTEST);
-
-        notify("Application resumed", Toast.LENGTH_SHORT);
+        sensorManager.registerListener(this, accelerometer, sensorSpeed);
+        sensorManager.registerListener(this, gyroscope, sensorSpeed);
     }
 
     protected void onPause(){
-        notify("Application is pausing", Toast.LENGTH_SHORT);
         sensorManager.unregisterListener(this);
         super.onPause();
     }
@@ -181,33 +179,24 @@ public class MainActivity extends Activity implements SensorEventListener {
         int evType = ev.sensor.getType();                           //Grab sensortype
         updateView(evType, ev.values);                              //Visually update the GUI
 
-        if( STATUS != CAPTURING ) return;                           //Don't bother if not capturing
+        if( STATUS != CAPTURING ){
+            return;                           //Don't bother if not capturing
+        }
 
         Data prevData = DataCenter.get( DataCenter.size() - 1);     //Grab previous element
-
-                                                            //Object is full or has already set the
-        if(     prevData.cont() == 2 ||                     // the current data type
-                (prevData.cont() == 1 && evType == Sensor.TYPE_ACCELEROMETER ) ||
-                (prevData.cont() == 0 && evType == Sensor.TYPE_GYROSCOPE )
-            ) {                                     //Last object is full or new data exist in obj
-            Data tmpData = new Data(ID, CAPTURE, System.currentTimeMillis()); //Create object
+        if( !prevData.isGyroSet() && evType == Sensor.TYPE_GYROSCOPE ){
+            prevData.addGyro(ev.values);                                        //Add gyro data
+        }
+        else if( !prevData.isAccSet() && evType == Sensor.TYPE_ACCELEROMETER ){
+            prevData.addAcc(ev.values);                                         //Add Acc data
+        }
+        else {                                                                  //Both is set
+            Data tmpData = new Data(ID, CAPTURE, System.currentTimeMillis());   //Create object
             if (evType == Sensor.TYPE_ACCELEROMETER)
-                tmpData.addAcc(ev.values);                          //Add accell
+                tmpData.addAcc(ev.values);                                      //Add accell
             else
-                tmpData.addGyro(ev.values);                         //Add gyro
-            DataCenter.add(tmpData);                                //Add object to list
-        }
-                                                        //No data set or gyroscope is set and new
-                                                        //data is acceleration
-        else if( (prevData.cont() == -1 || prevData.cont() == 0) &&
-                evType == Sensor.TYPE_ACCELEROMETER){   //Add accel data
-            prevData.addAcc(ev.values);                 //
-        }
-                                                        //No data set or acceleration is set and new
-                                                        //data is gyroscope
-        else if( (prevData.cont() == -1 || prevData.cont() == 1) &&
-                evType == Sensor.TYPE_GYROSCOPE){       //Add gyro data
-            prevData.addGyro(ev.values);                //
+                tmpData.addGyro(ev.values);                                     //Add gyro
+            DataCenter.add(tmpData);                                            //Add object to list
         }
     }
 

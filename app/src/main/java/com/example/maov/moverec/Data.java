@@ -26,17 +26,12 @@ public class Data {
                 Float.toString(gX)  + "," + Float.toString(gY)  + "," + Float.toString(gZ)  + "\n";
     }
 
-    public int cont(){
-        if( cont[1] == 1 && cont[1] == cont[2] ) //Both are set
-            return 2;
+    public boolean isGyroSet(){
+        return (cont[2] == 1);
+    }
 
-        else if( cont[1] == 1 && cont[2] == 0)   //Accell is set
-            return 1;
-
-        else if( cont[2] == 1 && cont[1] == 0)   //Gyro is set
-            return 0;
-
-        return -1;
+    public boolean isAccSet(){
+        return (cont[1] == 1);
     }
 
     public void addAcc(float[] acc){
